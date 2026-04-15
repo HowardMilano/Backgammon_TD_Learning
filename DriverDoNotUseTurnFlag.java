@@ -3,11 +3,13 @@ public class DriverDoNotUseTurnFlag {
 
     public static double[] getBoardNotation(GnuBoard gameBoard, Color player) {
         if (player == Color.WHITE) {
+            // Do not add the turn flag setting to the board notation
             return gameBoard.getBoardNotation(false);
         }
         else {
             GnuBoard copy = new GnuBoard(gameBoard);
             copy.flipPerspective();
+            // Do not add the turn flag setting to the board notation
             return copy.getBoardNotation(false);
         }
     }
