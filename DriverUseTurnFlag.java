@@ -6,16 +6,16 @@ public class DriverUseTurnFlag {
         return gameBoard.getBoardNotation(true);
     }
 
-    public double getScore(double[] prediction, Color player) {
-        if (player == Color.WHITE) {
-            return 1.0 - prediction[0];
+    public double getScore(double[] prediction, Color mover, Color playerColor) {
+        if (mover == playerColor) {
+            return prediction[0];
         }
         else {
-            return prediction[0];
+            return 1.0 - prediction[0];
         }
     }
     
-    private GnuMoves getBestMove(NeuralNetTwoHiddenTD nn, int[] diceRole, GnuBoard gameBoard) {
+    private GnuMoves getBestMove(NeuralNetTwoHiddenTD nn, int[] diceRole, GnuBoard gameBoard, Color playerColor) {
         List<GnuMoves> legalMoves = gameBoard.getLegalMoves(diceRole);
         if (legalMoves.isEmpty())
             return null;
@@ -27,8 +27,8 @@ public class DriverUseTurnFlag {
             GnuBoard freshBoard = new GnuBoard(gameBoard);
             freshBoard.moveAndCheckGame(moves);
             double[] prediction = nn.predict(getBoardNotation(freshBoard));
-            // We want the worst score for the opponent
-            double score = getScore(prediction, gameBoard.getTurn());
+            // We want the worst winning score for the opponent
+            double score = getScore(prediction, gameBoard.getTurn(), playerColor);
             if (bestScore == null || score < bestScore) {
                 bestScore = score;
                 bestMoves = moves;
@@ -47,6 +47,9 @@ public class DriverUseTurnFlag {
         GnuBoard board = new GnuBoard();
         board.setTurn(Math.random() >= 0.5 ? Color.WHITE : Color.BLACK);
 
+        // Player gets a random color
+        Color playerColor = Math.random() >= 0.5 ? Color.WHITE : Color.BLACK;
+
         nn.traceZeros();
 
         while (true) {
@@ -54,7 +57,7 @@ public class DriverUseTurnFlag {
             // Do a move
             Color mover = board.getTurn();
             GnuBoard beforeMoveBoard = new GnuBoard(board);
-            GnuMoves bestMove = getBestMove(nn, diceRole, board);
+            GnuMoves bestMove = getBestMove(nn, diceRole, board, playerColor);
             board.moveAndCheckGame(bestMove);
             if (board.isGameOver()) {
                 double afterGamePrediction[] = new double[1];
@@ -68,6 +71,7 @@ public class DriverUseTurnFlag {
                 else {
                     assert board.checkers[0][25] == 15;
                     assert mover == Color.WHITE;
+                    // Did the player win? if (playerColor == mover) .....
                     // Train the winner
                     afterGamePrediction[0] = 1.0;
                 }
