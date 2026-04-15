@@ -1,4 +1,4 @@
-# Backgammon_TD_Learning
+# Backgammon TD-Learning
 With this document I want to help other people implement a basic version of a driver for TD-Learning for a Backgammon AI Bot. The code assumes there is lots of other code including a backgammon board class that defines the board and can make checkers move, and a neural network (NN) that is enabled for TD-Learning. From experience I can say that the code for the board and the NN is not easy but straightforward. The code that drives the learning of the NN so it can play backgammon is not at all obvious.
 
 Modern AI agents can emit an NN that is TD-Learning enabled. They can also assist with creating the board class and the checker movement logic. However, none of the 3 AI agents I queried could write the code that drives the learning process. Sure they could write code that looked good at first glance but all the produced code failed to make an NN learn to play backgammon.
