@@ -69,26 +69,25 @@ public class DriverDoNotUseTurnFlag {
                 // Assumes a GnuBG style board, 0 - 23, 24 for bar, 25 for off
                 if (board.checkers[1][25] == 15)
                 {
-                    // Train the loser then the winner
+                    // Train the loser
                     assert player == Color.BLACK;
                     afterGamePrediction[0] = 0.0;
                     nn.trainOne(getBoardNotation(beforeMoveBoard, otherPlayer), afterGamePrediction);
-                    afterGamePrediction[0] = 1.0;
-                    nn.trainOne(getBoardNotation(beforeMoveBoard, player), afterGamePrediction);
                 }
                 else {
                     assert board.checkers[0][25] == 15;
                     assert player == Color.WHITE;
-                    // Train the winner then the loser
+                    // Train the winner
                     afterGamePrediction[0] = 1.0;
                     nn.trainOne(getBoardNotation(beforeMoveBoard, player), afterGamePrediction);
-                    afterGamePrediction[0] = 0.0;
-                    nn.trainOne(getBoardNotation(beforeMoveBoard, otherPlayer), afterGamePrediction);
                 }
                 break;
             } else {
+                // Train both ways
                 double[] nextState = nn.predict(getBoardNotation(board, player));
                 nn.trainOne(getBoardNotation(beforeMoveBoard, player), nextState);
+                nextState = nn.predict(getBoardNotation(board, otherPlayer));
+                nn.trainOne(getBoardNotation(beforeMoveBoard, otherPlayer), nextState);
             }
         }
 
