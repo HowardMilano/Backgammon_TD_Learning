@@ -7,7 +7,9 @@ There are two drivers I researched. A driver that uses board notations that incl
 
 The theory is that not including the turn setting, AND adding code to flip the board at appropriate times will make the NN use symmetry to learn to see one way of looking at the board, the who’s at turn POV.
 
-The drivers can easily be extended to train the NN for 5 outputs (win, gammonWin, backgammonWin, gammonLoss, backgammonLoss) instead of the 1 output (win) the attached code uses.
+After testing I realized that my code that doesn't store 'turn' doesn't learn as well as the code that does store 'turn'. I talked to Claude about it, and the reason is that code that doesn't store 'turn' is very tricky to implement, it even needs to keep track of forced skipped turns for instance. Any flipping or value adjusting that is done at the wrong time, will create a bot that will not learn as well as a bot that does store 'turn'. On top of that, it's not clear a bot that doesn't store 'turn' will perform much or any better than a bot that does store 'turn'. The advantage of the bot that does store 'turn' is that it's simple code that creates a very eager learner.
+
+The driver for the bot that does store 'turn' can easily be extended to train the NN for 5 outputs (win, gammonWin, backgammonWin, gammonLoss, backgammonLoss) instead of the 1 output (win) the attached code uses.
 
 The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me with suggestions for improvements.
 
