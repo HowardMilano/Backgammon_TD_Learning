@@ -1,3 +1,9 @@
+// Update: After testing this driver doesn't perform as well as the DriverUseTurnFlag.java driver.
+// Looks like more flipping and value adjusting is necessary to make this driver a better learner.
+// 
+// My recommendation at this point, use DriverUseTurnFlag.java as the driver, it works,
+// it's simple code and it creates an eager learner.
+//
 public class DriverDoNotUseTurnFlag {
     private static double epsilon = 0.09; // How often should we pick a random move?
 
