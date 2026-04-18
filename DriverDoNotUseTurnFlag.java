@@ -1,12 +1,14 @@
-// Update: After testing this driver doesn't perform as well as the DriverUseTurnFlag.java driver.
-// Looks like more flipping and value adjusting is necessary to make this driver a better learner.
-// 
-// My recommendation at this point, use DriverUseTurnFlag.java as the driver, it works,
-// it's simple code and it creates an eager learner.
+//
+// Update: This driver doesn't perform as well as the other 2 drivers.
 //
 public class DriverDoNotUseTurnFlag {
     private static double epsilon = 0.09; // How often should we pick a random move?
 
+    //
+    // Assumes a GnuBG style board, 0 - 23, 24 for bar, 25 for off
+    // Both players play from 23 - 0
+    //
+    
     public static double[] getBoardNotation(GnuBoard gameBoard, Color player) {
         if (player == Color.WHITE) {
             // Do not add the turn flag setting to the board notation
@@ -14,6 +16,9 @@ public class DriverDoNotUseTurnFlag {
         }
         else {
             GnuBoard copy = new GnuBoard(gameBoard);
+            // Flip the board mirror-like, so swap left and right sides
+            // Do not flip such that the flipped board is a rotated version
+            // of the old board, because the NN will not learn
             copy.flipPerspective();
             // Do not add the turn flag setting to the board notation
             return copy.getBoardNotation(false);
@@ -26,8 +31,8 @@ public class DriverDoNotUseTurnFlag {
 
     public static GnuMoves getBestMove(NeuralNetTwoHiddenTD nn,
                                        int[] diceRole, 
-                                       GnuBoard gameBoard, 
-                                       Color player) {
+                                       GnuBoard gameBoard) {
+        Color player = gameBoard.getTurn();
         Color otherPlayer = player == Color.WHITE ? Color.BLACK : Color.WHITE;
         List<GnuMoves> legalMoves = gameBoard.getLegalMoves(diceRole);
         if (legalMoves.isEmpty())
@@ -37,6 +42,7 @@ public class DriverDoNotUseTurnFlag {
         Double bestScore = null;
         GnuMoves bestMoves = null;
         for (GnuMoves moves : legalMoves) {
+            // Copy constructor
             GnuBoard freshBoard = new GnuBoard(gameBoard);
             freshBoard.moveAndCheckGame(moves);
             double[] prediction = nn.predict(getBoardNotation(freshBoard, otherPlayer));
@@ -65,35 +71,33 @@ public class DriverDoNotUseTurnFlag {
         while (true) {
             int[] diceRole = board.roleDice();
             // Do a move
-            Color player = board.getTurn();
-            Color otherPlayer = player == Color.WHITE ? Color.BLACK : Color.WHITE;
+            // Copy constructor
             GnuBoard beforeMoveBoard = new GnuBoard(board);
-            GnuMoves bestMove = getBestMove(nn, diceRole, board, player);
+            GnuMoves bestMove = getBestMove(nn, diceRole, board);
             board.moveAndCheckGame(bestMove);
             if (board.isGameOver()) {
                 double afterGamePrediction[] = new double[1];
-                // Assumes a GnuBG style board, 0 - 23, 24 for bar, 25 for off
                 if (board.checkers[1][25] == 15)
                 {
                     // Train the loser
-                    assert player == Color.BLACK;
                     afterGamePrediction[0] = 0.0;
-                    nn.trainOne(getBoardNotation(beforeMoveBoard, otherPlayer), afterGamePrediction);
+                    nn.trainOne(getBoardNotation(beforeMoveBoard, board.getTurn()), afterGamePrediction);
                 }
                 else {
                     assert board.checkers[0][25] == 15;
-                    assert player == Color.WHITE;
                     // Train the winner
                     afterGamePrediction[0] = 1.0;
-                    nn.trainOne(getBoardNotation(beforeMoveBoard, player), afterGamePrediction);
+                    nn.trainOne(getBoardNotation(beforeMoveBoard, beforeMoveBoard.getTurn()), afterGamePrediction);
                 }
                 break;
             } else {
-                // Train both ways
-                double[] nextState = nn.predict(getBoardNotation(board, player));
-                nn.trainOne(getBoardNotation(beforeMoveBoard, player), nextState);
-                nextState = nn.predict(getBoardNotation(board, otherPlayer));
-                nn.trainOne(getBoardNotation(beforeMoveBoard, otherPlayer), nextState);
+                // Use the same POV for both board notations so they differ just a small step
+                double[] beforeMoveBoardNotation = getBoardNotation(beforeMoveBoard, beforeMoveBoard.getTurn());
+                double[] afterMoveBoardNotation = getBoardNotation(board, beforeMoveBoard.getTurn());
+                nn.trainOne(beforeMoveBoardNotation, nn.predict(afterMoveBoardNotation));
+                beforeMoveBoardNotation = getBoardNotation(beforeMoveBoard, board.getTurn());
+                afterMoveBoardNotation = getBoardNotation(board, board.getTurn());
+                nn.trainOne(beforeMoveBoardNotation, nn.predict(afterMoveBoardNotation));
             }
         }
 
