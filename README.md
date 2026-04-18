@@ -18,5 +18,11 @@ Player GnuBoardSimple Wins = 59.97% PPG1 = 0.81 Gammon Wins = 1051 Backgammon Wi
 
 To help with implementing code to train against GnuBG position files, I added GnuBgDecoder.java which shows how to turn 20 character position strings into board positions.
 
+My current setup is 340 - 520 - 256 - 5 in the NN. I have tried 3 hidden layer NNs, but they tend to suffer learning collapses (forgets most learning) even when running at lambda 0.0. With a 2 hidden layer network, I've run one NN up to more than 1 million games at lambda 0.7, learning rate 0.001, totally stable. Many people recommend lambda 0.0, but I found that learning is slower and the results are definitely not better than with 0.7.
+
+I use plain Java with just default Java libraries. I do use 1D arrays in my NN to speed up the loops. I parallelize the running of tests against a static NN, that makes it at least 5 times faster than running tests serially, well at least if your CPU has multiple cores. I use this code to run tests in parallel:
+
+    IntStream.range(0, numberOfGames).parallel().forEach(gameNum -> { run test });
+
 The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me (Howard@HowardMilano.com) with suggestions for improvements.
 
