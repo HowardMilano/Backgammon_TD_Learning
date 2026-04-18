@@ -58,6 +58,7 @@ public class GnuBgDecoder {
         gnuBoard.checkers[1][25] = 15 - off1;
 
         gnuBoard.setTurn(Color.BLACK);
+        gnuBoard.checkInternals();
         return gnuBoard;
     }
 
@@ -91,6 +92,7 @@ public class GnuBgDecoder {
 
         for (int x = 0; x < ids.length; x++) {
             GnuBoard gnuBoard = decodePositionID(ids[x].substring(2));
+            // I have two board style, gnu style and old style, make sure it's a valid board in the old style
             GenericBoard genericBoard = gnuBoard.toGenericBoard();
             Board oldStyleBoard = Board.fromGenericBoard(genericBoard);
             oldStyleBoard.checkInternals();
