@@ -16,5 +16,5 @@ Player PubEvalPlayer Wins = 40.03% PPG1 = 0.55 Gammon Wins = 646 Backgammon Wins
 Player GnuBoardSimple Wins = 59.97% PPG1 = 0.81 Gammon Wins = 1051 Backgammon Wins = 111
 
 
-The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me with suggestions for improvements.
+The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me (Howard@HowardMilano.com) with suggestions for improvements.
 
