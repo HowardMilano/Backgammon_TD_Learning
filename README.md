@@ -3,13 +3,15 @@ With this document I want to help other people implement a basic version of a dr
 
 Modern AI agents can emit an NN that is TD-Learning enabled. They can also assist with creating the board class and the checker movement logic. However, none of the 3 AI agents I queried could write the code that drives the learning process. Sure they could write code that looked good at first glance but all the produced code failed to make an NN learn to play backgammon.
 
-There are two drivers I researched. A driver that uses board notations that include a setting for the current turn (WHITE or BLACK), and a driver that uses notations without a turn setting (which Gnu Backgammon and other modern players use). The first driver is what many people will implement when they first write a backgammon bot. The second driver is trickier to implement and people will implement that after they get criticism that adding a turn setting in the board notation is not necessary.
+There are three drivers I researched. A driver that uses board notations that include a setting for the current turn (WHITE or BLACK), and a driver that uses notations without a turn setting but it uses flips of perspective (which Gnu Backgammon and other modern players use) and a third driver that uses both turn and flips perspective. The first driver is what many people will implement when they first write a backgammon bot. The second driver is trickier to implement and people will implement that after they get criticism that adding a turn setting in the board notation is not necessary. The third driver is, I think, an improvement over both.
 
 The theory is that not including the turn setting, AND adding code to flip the board at appropriate times will make the NN use symmetry to learn to see one way of looking at the board, the who’s at turn POV.
 
-After testing I realized that my code that doesn't store 'turn' doesn't learn as well as the code that does store 'turn'. I talked to Claude about it, and the reason is that code that doesn't store 'turn' is very tricky to implement, it even needs to keep track of forced skipped turns for instance. Any flipping or value adjusting that is done at the wrong time, will create a bot that will not learn as well as a bot that does store 'turn'. On top of that, it's not clear a bot that doesn't store 'turn' will perform much or any better than a bot that does store 'turn'. The advantage of the bot that does store 'turn' is that it's simple code that creates a very eager learner.
+In my testing, the third driver outperforms the other drivers.
 
-The driver for the bot that does store 'turn' can easily be extended to train the NN for 5 outputs (win, gammonWin, backgammonWin, gammonLoss, backgammonLoss) instead of the 1 output (win) the attached code uses.
+The drivers can easily be extended to train the NN for 5 outputs (win, gammonWin, backgammonWin, gammonLoss, backgammonLoss) instead of the 1 output (win) the attached code uses.
+
+If you really want to speed up the learning of the NN, mix in some supervised training using the GnuBG training files (e.g. contact-train-data). You do need to turn off TD-Learning in the NN while you do supervised training, then switch it on again after the training. For example, run 100 games, train on 1000 random positions from the training file. This speeds up learning by a 3X or 4X. You'll be amazed when you do that. To do this, use the third driver and for each GnuBG position create your own board and set turn to BLACK so the POV matches the GnuBG POV then train.
 
 The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me with suggestions for improvements.
 
