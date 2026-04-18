@@ -12,9 +12,11 @@ In my testing, the third driver outperforms the other drivers.
 The drivers can easily be extended to train the NN for 5 outputs (win, gammonWin, backgammonWin, gammonLoss, backgammonLoss) instead of the 1 output (win) the attached code uses.
 
 If you really want to speed up the learning of the NN, mix in some supervised training using the GnuBG training files (e.g. contact-train-data). You do need to turn off TD-Learning in the NN while you do supervised training, then switch it on again after the training. For example, run 100 games, train on 1000 random positions from the training file. This speeds up learning by a 3X or 4X. You'll be amazed when you do that. To do this, use the third driver and for each GnuBG position create your own board and set turn to BLACK so the POV matches the GnuBG POV then train. Here is the result I got after training for 100K games, intermixed with GnuBG position training:
+
 Player PubEvalPlayer Wins = 40.03% PPG1 = 0.55 Gammon Wins = 646 Backgammon Wins = 130
 Player GnuBoardSimple Wins = 59.97% PPG1 = 0.81 Gammon Wins = 1051 Backgammon Wins = 111
 
+To help with implementing code to train against GnuBG position files, I added GnuBgDecoder.java which shows how to turn 20 character position strings into board positions.
 
 The attached code is how I implemented the drivers. I’m sure there are better ways and you can contact me (Howard@HowardMilano.com) with suggestions for improvements.
 
