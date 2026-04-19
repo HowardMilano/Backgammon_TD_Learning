@@ -82,13 +82,19 @@ public class DriverFlipAndStoreTurnFlag {
                 {
                     // Train the loser
                     afterGamePrediction[0] = 0.0;
-                    nn.trainOne(getBoardNotation(board, board.getTurn()), afterGamePrediction);
+                    nn.trainOne(getBoardNotation(beforeMoveBoard, board.getTurn()), afterGamePrediction);
+                    // You can use the line below instead, AND switch the trainOne line below
+                    // My testing tells me that the used code is slightly better
+                    //nn.trainOne(getBoardNotation(board, board.getTurn()), afterGamePrediction);
                 }
                 else {
                     assert board.checkers[0][25] == 15;
                     // Train the winner
                     afterGamePrediction[0] = 1.0;
-                    nn.trainOne(getBoardNotation(board, beforeMoveBoard.getTurn()), afterGamePrediction);
+                    nn.trainOne(getBoardNotation(beforeMoveBoard, beforeMoveBoard.getTurn()), afterGamePrediction);
+                    // You can use the line below instead, AND switch the trainOne line above
+                    // My testing tells me that the used code is slightly better
+                    //nn.trainOne(getBoardNotation(board, beforeMoveBoard.getTurn()), afterGamePrediction);
                 }
                 break;
             } else {
