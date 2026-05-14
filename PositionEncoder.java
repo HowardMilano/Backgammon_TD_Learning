@@ -35,6 +35,7 @@ public class PositionEncoder {
         GnuBoard finalBoard = board;
         if (board.getTurn() == Color.WHITE) {
             finalBoard = new GnuBoard(board);
+            finalBoard.flipPerspective();
         }
 
         // First step
